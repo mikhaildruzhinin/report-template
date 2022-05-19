@@ -38,7 +38,7 @@ class CommandLineConf(arguments: Seq[String]) extends ScallopConf(arguments) {
     descr = "Group by region"
   )
   val channel: ScallopOption[Boolean] = opt[Boolean](
-    short = 'l', // 'c' and 'h' has been already taken
+    short = 'l', // 'c' and 'h' have been already taken
     default = Some(false),
     descr = "Group by channel"
   )
