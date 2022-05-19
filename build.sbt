@@ -6,3 +6,5 @@ lazy val root = (project in file("."))
   .settings(
     name := "report-template"
   )
+
+libraryDependencies += "org.rogach" %% "scallop" % "4.1.0"
