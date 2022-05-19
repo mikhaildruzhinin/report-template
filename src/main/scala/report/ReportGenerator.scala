@@ -4,13 +4,12 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.{col, round, sum}
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
 
-class ReportGenerator(
-  spark: SparkSession,
-  pathToProductsFile: String,
-  databaseUrl: String,
-  dateFrom: String,
-  dateTo: String
- ) {
+class ReportGenerator(spark: SparkSession, builder: ReportGeneratorBuilder) {
+  private val pathToProductsFile: String = builder.pathToProductsFile
+  private val databaseUrl: String = builder.databaseUrl
+  private val dateFrom: String = builder.dateFrom
+  private val dateTo: String = builder.dateTo
+
   def generate(): Unit = {
     val productSchema = StructType(
       Array(
