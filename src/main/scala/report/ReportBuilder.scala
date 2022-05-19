@@ -2,7 +2,7 @@ package report
 
 import com.typesafe.config.Config
 
-class ReportGeneratorBuilder(commandLineConf: CommandLineConf, applicationConf: Config) {
+class ReportBuilder(commandLineConf: CommandLineConf, applicationConf: Config) {
   val pathToProductsFile: String = commandLineConf.pathToProductsFile()
   val databaseUrl: String = applicationConf.getString("database.url")
   val dateFrom: String = commandLineConf.dateFrom()
