@@ -2,6 +2,7 @@ package report
 
 import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.spark.sql.SparkSession
+import util.CommandLineConf
 
 object Main {
   def main(args: Array[String]): Unit = {

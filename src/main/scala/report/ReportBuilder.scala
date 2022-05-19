@@ -1,6 +1,7 @@
 package report
 
 import com.typesafe.config.Config
+import util.CommandLineConf
 
 class ReportBuilder(commandLineConf: CommandLineConf, applicationConf: Config) {
   val pathToProductsFile: String = commandLineConf.pathToProductsFile()

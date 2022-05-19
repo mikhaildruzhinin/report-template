@@ -1,4 +1,4 @@
-package report
+package util
 
 import org.rogach.scallop.{ScallopConf, ScallopOption}
 
