@@ -7,4 +7,5 @@ class ReportGeneratorBuilder(commandLineConf: CommandLineConf, applicationConf: 
   val databaseUrl: String = applicationConf.getString("database.url")
   val dateFrom: String = commandLineConf.dateFrom()
   val dateTo: String = commandLineConf.dateTo()
+  val categories: String = commandLineConf.categories()
 }
