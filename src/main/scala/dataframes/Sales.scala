@@ -1,6 +1,7 @@
 package dataframes
 
-import org.apache.spark.sql.functions.col
+import org.apache.spark.sql.expressions.Window
+import org.apache.spark.sql.functions.{col, round, sum}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 class Sales(spark: SparkSession, databaseUrl: String, val df: DataFrame) extends BaseDataFrame {
@@ -27,6 +28,62 @@ class Sales(spark: SparkSession, databaseUrl: String, val df: DataFrame) extends
         "inner"
       )
     } else this.df
+    new Sales(spark, databaseUrl, df)
+  }
+
+  def joinSalesAndBrands(products: Products): Sales = {
+    val joinCondition = this.df.col("sales_product_name_hash") === products.df.col("product_name_hash")
+    val df = this.df.join(
+      products.df,
+      joinCondition,
+      "inner"
+    )
+    new Sales(spark, databaseUrl, df)
+  }
+
+  def joinSalesAndRegions(groupByRegion: Boolean): Sales = {
+    val df = if (groupByRegion) {
+      val regions = new KktInfo(spark, databaseUrl).df
+      val joinCondition = this.df.col("kkt_number") === regions.col("number")
+      this.df.join(
+        regions,
+        joinCondition,
+        "inner"
+      )
+    } else {
+      this.df
+    }
+    new Sales(spark, databaseUrl, df)
+  }
+
+  def calculateTotalSum(columnsToGroupBy: Array[String]): Sales = {
+    val df = this.df.groupBy(columnsToGroupBy.head, columnsToGroupBy.tail: _*)
+      .agg(
+        round(
+          sum("total_sum"),
+          2
+        ).as("total_sum"))
+      .orderBy(columnsToGroupBy.head, columnsToGroupBy.tail: _*)
+    new Sales(spark, databaseUrl, df)
+  }
+
+  def calculateTotalSumPct(columnsToGroupBy: Array[String]): Sales = {
+    val df = this.df.withColumn(
+      "total_sum_pct",
+      round(
+        col("total_sum") / sum("total_sum").over(
+          if (columnsToGroupBy.length > 1) {
+            Window.partitionBy(
+              columnsToGroupBy.dropRight(1).head,
+              columnsToGroupBy.dropRight(1).tail: _*
+            )
+          } else {
+            Window.partitionBy() // can't get the head of an empty array
+          }
+        ),
+        2
+      )
+    )
     new Sales(spark, databaseUrl, df)
   }
 }

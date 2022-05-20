@@ -1,6 +1,6 @@
 package report
 
-import dataframes.{AggregatedResults, Products, Sales}
+import dataframes.{Products, Sales}
 import org.apache.spark.sql.SparkSession
 
 class Report(spark: SparkSession, builder: ReportBuilder) {
@@ -12,6 +12,15 @@ class Report(spark: SparkSession, builder: ReportBuilder) {
   private val groupByReceiptDate: Boolean = builder.groupByReceiptDate
   private val groupByRegion: Boolean = builder.groupByRegion
 
+  private def getColumnsToGroupBy: Array[String] = {
+    val aggregateByColumns = Map(
+      "receipt_date" -> groupByReceiptDate,
+      "region" -> groupByRegion,
+      "brand" -> true
+    )
+    aggregateByColumns.filter(_._2).keySet.toArray
+  }
+
   def generate(): Unit = {
     val products = new Products(spark, pathToProductsFile)
 
@@ -19,18 +28,13 @@ class Report(spark: SparkSession, builder: ReportBuilder) {
     val salesFilteredByDates = sales.filterByDates(dateFrom, dateTo)
     val salesFilteredByCategories = salesFilteredByDates.filterByCategories(categories)
 
-    val aggregateByColumns = Map(
-      "receipt_date" -> groupByReceiptDate,
-      "region" -> groupByRegion,
-      "brand" -> true
-    )
-    val aggregatedResults = new AggregatedResults(
-      spark,
-      databaseUrl,
-      products,
-      salesFilteredByCategories,
-      aggregateByColumns
-    )
-    aggregatedResults.df.show()
+    val salesByBrands = salesFilteredByCategories.joinSalesAndBrands(products)
+    val salesByRegion = salesByBrands.joinSalesAndRegions(groupByRegion)
+
+    val columnsToGroupBy = getColumnsToGroupBy
+
+    val totalSum = salesByRegion.calculateTotalSum(columnsToGroupBy)
+    val totalSumPct = totalSum.calculateTotalSumPct(columnsToGroupBy)
+    totalSumPct.df.show()
   }
 }
