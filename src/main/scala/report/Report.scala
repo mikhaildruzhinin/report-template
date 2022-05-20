@@ -10,6 +10,7 @@ class Report(spark: SparkSession, builder: ReportBuilder) {
   private val dateTo: String = builder.dateTo
   private val categories: String = builder.categories
   private val groupByReceiptDate: Boolean = builder.groupByReceiptDate
+  private val groupByRegion: Boolean = builder.groupByRegion
 
   def generate(): Unit = {
     val products = new Products(spark, pathToProductsFile)
@@ -20,9 +21,12 @@ class Report(spark: SparkSession, builder: ReportBuilder) {
 
     val aggregateByColumns = Map(
       "receipt_date" -> groupByReceiptDate,
+      "region" -> groupByRegion,
       "brand" -> true
     )
     val aggregatedResults = new AggregatedResults(
+      spark,
+      databaseUrl,
       products,
       salesFilteredByCategories,
       aggregateByColumns

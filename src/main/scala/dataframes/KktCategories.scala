@@ -4,10 +4,8 @@ import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions.{col, desc, row_number}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-class KktCategories(spark: SparkSession, databaseUrl: String, val df: DataFrame) extends BaseDataFrame {
+class KktCategories(val df: DataFrame) extends BaseDataFrame {
   def this(spark: SparkSession, databaseUrl: String) = this(
-    spark,
-    databaseUrl,
     KktCategories.getDF(spark, databaseUrl)
   )
 

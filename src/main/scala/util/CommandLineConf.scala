@@ -22,6 +22,7 @@ class CommandLineConf(arguments: Seq[String]) extends ScallopConf(arguments) {
     descr = "Final date for the report"
   )
   val categories: ScallopOption[String] = opt[String](
+    name = "categories",
     short = 'c',
     default = Some(""),
     descr = "Filter by kkt_category"
@@ -33,11 +34,13 @@ class CommandLineConf(arguments: Seq[String]) extends ScallopConf(arguments) {
     descr = "Group by receipt_date"
   )
   val region: ScallopOption[Boolean] = opt[Boolean](
+    name = "region",
     short = 'r',
     default = Some(false),
     descr = "Group by region"
   )
   val channel: ScallopOption[Boolean] = opt[Boolean](
+    name = "channel",
     short = 'l', // 'c' and 'h' have been already taken
     default = Some(false),
     descr = "Group by channel"

@@ -3,10 +3,8 @@ package dataframes
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-class Products(spark: SparkSession, pathToProductsFile: String, val df: DataFrame) extends BaseDataFrame {
+class Products(val df: DataFrame) extends BaseDataFrame {
   def this(spark: SparkSession, pathToProductsFile: String) = this(
-    spark,
-    pathToProductsFile,
     Products.getDF(spark, pathToProductsFile)
   )
 }
