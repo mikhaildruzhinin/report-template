@@ -10,22 +10,24 @@ class Sales(spark: SparkSession, databaseUrl: String, val df: DataFrame) extends
     Sales.getDF(spark, databaseUrl)
   )
 
-  def filterByDates(dateFrom: String, dateTo: String): DataFrame = {
-    df.filter(
+  def filterByDates(dateFrom: String, dateTo: String): Sales = {
+    val df = this.df.filter(
       col("receipt_date").between(dateFrom, dateTo)
     )
+    new Sales(spark, databaseUrl, df)
   }
 
-  def filterByCategories(categories: String): DataFrame = {
-    if (!"".equals(categories)) {
-      val kktNumbers = new KktCategories(spark, databaseUrl).getKktNumbers(categories)
-      val joinCondition = df.col("kkt_number") === kktNumbers.col("number")
-      df.join(
+  def filterByCategories(categories: String): Sales = {
+    val df = if (!"".equals(categories)) {
+      val kktNumbers = new KktCategories(spark, databaseUrl).getKktNumbersDF(categories)
+      val joinCondition = this.df.col("kkt_number") === kktNumbers.col("number")
+      this.df.join(
         kktNumbers,
         joinCondition,
         "inner"
       )
-    } else df
+    } else this.df
+    new Sales(spark, databaseUrl, df)
   }
 }
 

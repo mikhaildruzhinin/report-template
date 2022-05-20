@@ -1,6 +1,6 @@
 package report
 
-import dataframes.{Products, Sales}
+import dataframes.{AggregatedResults, Products, Sales}
 import org.apache.spark.sql.SparkSession
 
 class Report(spark: SparkSession, builder: ReportBuilder) {
@@ -15,25 +15,18 @@ class Report(spark: SparkSession, builder: ReportBuilder) {
     val products = new Products(spark, pathToProductsFile)
 
     val sales = new Sales(spark, databaseUrl)
-    val salesFilteredByDates = new Sales(
-      spark=spark,
-      databaseUrl=databaseUrl,
-      df=sales.filterByDates(dateFrom, dateTo)
-    )
-    val salesFilteredByCategories = new Sales(
-      spark=spark,
-      databaseUrl=databaseUrl,
-      df=salesFilteredByDates.filterByCategories(categories)
-    )
+    val salesFilteredByDates = sales.filterByDates(dateFrom, dateTo)
+    val salesFilteredByCategories = salesFilteredByDates.filterByCategories(categories)
 
     val aggregateByColumns = Map(
       "receipt_date" -> groupByReceiptDate,
       "brand" -> true
     )
-    val aggregatedResults = products.aggregateByBrand(
+    val aggregatedResults = new AggregatedResults(
+      products,
       salesFilteredByCategories,
       aggregateByColumns
     )
-    aggregatedResults.show()
+    aggregatedResults.df.show()
   }
 }

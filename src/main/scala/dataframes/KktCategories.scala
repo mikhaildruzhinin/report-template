@@ -11,9 +11,9 @@ class KktCategories(spark: SparkSession, databaseUrl: String, val df: DataFrame)
     KktCategories.getDF(spark, databaseUrl)
   )
 
-  def getKktNumbers(categories: String): DataFrame = {
+  def getKktNumbersDF(categories: String): DataFrame = {
     df
-      .filter(col("category").isInCollection(categories.split(", ")))
+      .filter(col("category").isInCollection(categories.split(",")))
       .withColumn(
         "rn",
         row_number().over(
