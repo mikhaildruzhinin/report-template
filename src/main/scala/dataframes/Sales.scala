@@ -4,23 +4,19 @@ import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions.{col, round, sum}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-class Sales(spark: SparkSession, databaseUrl: String, val df: DataFrame) extends BaseDataFrame {
-  def this(spark: SparkSession, databaseUrl: String) = this(
-    spark,
-    databaseUrl,
-    Sales.getDF(spark, databaseUrl)
-  )
+class Sales(val df: DataFrame) extends BaseDataFrame {
+  def this(spark: SparkSession, databaseUrl: String) = this(Sales.getDF(spark, databaseUrl))
 
   def filterByDates(dateFrom: String, dateTo: String): Sales = {
     val df = this.df.filter(
       col("receipt_date").between(dateFrom, dateTo)
     )
-    new Sales(spark, databaseUrl, df)
+    new Sales(df)
   }
 
-  def filterByCategories(categories: String): Sales = {
+  def filterByCategories(categories: String, kktCategories: KktCategories): Sales = {
     val df = if (!"".equals(categories)) {
-      val kktNumbers = new KktCategories(spark, databaseUrl).getKktNumbersDF(categories)
+      val kktNumbers = kktCategories.getKktNumbersDF(categories)
       val joinCondition = this.df.col("kkt_number") === kktNumbers.col("number")
       this.df.join(
         kktNumbers,
@@ -28,7 +24,7 @@ class Sales(spark: SparkSession, databaseUrl: String, val df: DataFrame) extends
         "inner"
       )
     } else this.df
-    new Sales(spark, databaseUrl, df)
+    new Sales(df)
   }
 
   def joinSalesAndBrands(products: Products): Sales = {
@@ -38,22 +34,21 @@ class Sales(spark: SparkSession, databaseUrl: String, val df: DataFrame) extends
       joinCondition,
       "inner"
     )
-    new Sales(spark, databaseUrl, df)
+    new Sales(df)
   }
 
-  def joinSalesAndRegions(groupByRegion: Boolean): Sales = {
+  def joinSalesAndRegions(groupByRegion: Boolean, kktInfo: KktInfo): Sales = {
     val df = if (groupByRegion) {
-      val regions = new KktInfo(spark, databaseUrl).df
-      val joinCondition = this.df.col("kkt_number") === regions.col("number")
+      val joinCondition = this.df.col("kkt_number") === kktInfo.df.col("number")
       this.df.join(
-        regions,
+        kktInfo.df,
         joinCondition,
         "inner"
       )
     } else {
       this.df
     }
-    new Sales(spark, databaseUrl, df)
+    new Sales(df)
   }
 
   def calculateTotalSum(columnsToGroupBy: Array[String]): Sales = {
@@ -64,7 +59,7 @@ class Sales(spark: SparkSession, databaseUrl: String, val df: DataFrame) extends
           2
         ).as("total_sum"))
       .orderBy(columnsToGroupBy.head, columnsToGroupBy.tail: _*)
-    new Sales(spark, databaseUrl, df)
+    new Sales(df)
   }
 
   def calculateTotalSumPct(columnsToGroupBy: Array[String]): Sales = {
@@ -84,7 +79,7 @@ class Sales(spark: SparkSession, databaseUrl: String, val df: DataFrame) extends
         2
       )
     )
-    new Sales(spark, databaseUrl, df)
+    new Sales(df)
   }
 }
 

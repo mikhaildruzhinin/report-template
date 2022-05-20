@@ -2,12 +2,8 @@ package dataframes
 
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-class KktInfo(spark: SparkSession, databaseUrl: String, val df: DataFrame) extends BaseDataFrame {
-  def this(spark: SparkSession, databaseUrl: String) = this(
-    spark,
-    databaseUrl,
-    KktInfo.getDF(spark, databaseUrl)
-  )
+class KktInfo(val df: DataFrame) extends BaseDataFrame {
+  def this(spark: SparkSession, databaseUrl: String) = this(KktInfo.getDF(spark, databaseUrl))
 }
 
 object KktInfo {

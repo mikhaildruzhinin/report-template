@@ -1,6 +1,6 @@
 package report
 
-import dataframes.{Products, Sales}
+import dataframes.{KktCategories, KktInfo, Products, Sales}
 import org.apache.spark.sql.SparkSession
 
 class Report(spark: SparkSession, builder: ReportBuilder) {
@@ -22,14 +22,16 @@ class Report(spark: SparkSession, builder: ReportBuilder) {
   }
 
   def generate(): Unit = {
-    val products = new Products(spark, pathToProductsFile)
-
     val sales = new Sales(spark, databaseUrl)
+    val products = new Products(spark, pathToProductsFile)
+    val kktCategories = new KktCategories(spark, databaseUrl)
+    val kktInfo = new KktInfo(spark, databaseUrl)
+
     val salesFilteredByDates = sales.filterByDates(dateFrom, dateTo)
-    val salesFilteredByCategories = salesFilteredByDates.filterByCategories(categories)
+    val salesFilteredByCategories = salesFilteredByDates.filterByCategories(categories, kktCategories)
 
     val salesByBrands = salesFilteredByCategories.joinSalesAndBrands(products)
-    val salesByRegion = salesByBrands.joinSalesAndRegions(groupByRegion)
+    val salesByRegion = salesByBrands.joinSalesAndRegions(groupByRegion, kktInfo)
 
     val columnsToGroupBy = getColumnsToGroupBy
 
