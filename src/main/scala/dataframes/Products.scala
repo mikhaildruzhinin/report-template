@@ -23,5 +23,6 @@ object Products {
       .option("header", "true")
       .option("sep", ",")
       .csv(pathToProductsFile)
+      .withColumnRenamed("product_name_hash", "name_hash")
   }
 }

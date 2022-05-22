@@ -1,3 +1,7 @@
 package dataframes
 
-abstract class BaseDataFrame
+import org.apache.spark.sql.DataFrame
+
+abstract class BaseDataFrame {
+  val df: DataFrame
+}

@@ -28,7 +28,7 @@ class Sales(val df: DataFrame) extends BaseDataFrame {
   }
 
   def joinSalesAndBrands(products: Products): Sales = {
-    val joinCondition = this.df.col("sales_product_name_hash") === products.df.col("product_name_hash")
+    val joinCondition = this.df.col("product_name_hash") === products.df.col("name_hash")
     val df = this.df.join(
       products.df,
       joinCondition,
@@ -90,6 +90,5 @@ object Sales {
       .option("url", databaseUrl)
       .option("dbtable", "sales")
       .load()
-      .withColumnRenamed("product_name_hash", "sales_product_name_hash")
   }
 }
