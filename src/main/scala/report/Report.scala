@@ -2,6 +2,7 @@ package report
 
 import dataframes.{KktActivity, KktCategories, KktInfo, Products, Sales}
 import org.apache.spark.sql.SparkSession
+import util.{ReportBuilder, ReportWriter}
 
 class Report(spark: SparkSession, builder: ReportBuilder) {
   private val pathToProductsFile: String = builder.pathToProductsFile
@@ -15,6 +16,8 @@ class Report(spark: SparkSession, builder: ReportBuilder) {
     "channel" -> builder.groupByChannel,
     "brand" -> true
   )
+  private val datetimeFormat: String = builder.datetimeFormat
+  private val outputPath: String = builder.outputPath
 
   def generate(): Unit = {
     val sales = new Sales(spark, databaseUrl)
@@ -37,6 +40,8 @@ class Report(spark: SparkSession, builder: ReportBuilder) {
 
     val totalSum = salesWithInfo.calculateTotalSum(columnsToGroupBy)
     val totalSumPct = totalSum.calculateTotalSumPct(columnsToGroupBy)
-    totalSumPct.df.show()
+
+    val reportWriter = new ReportWriter(datetimeFormat, outputPath)
+    reportWriter.write(totalSumPct)
   }
 }

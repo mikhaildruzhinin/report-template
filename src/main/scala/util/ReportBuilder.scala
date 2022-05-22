@@ -1,7 +1,6 @@
-package report
+package util
 
 import com.typesafe.config.Config
-import util.CommandLineConf
 
 class ReportBuilder(commandLineConf: CommandLineConf, applicationConf: Config) {
   val pathToProductsFile: String = commandLineConf.pathToProductsFile()
@@ -12,4 +11,6 @@ class ReportBuilder(commandLineConf: CommandLineConf, applicationConf: Config) {
   val groupByReceiptDate: Boolean = commandLineConf.receiptDate()
   val groupByRegion: Boolean = commandLineConf.region()
   val groupByChannel: Boolean = commandLineConf.channel()
+  val datetimeFormat: String = applicationConf.getString("report.datetime_format")
+  val outputPath: String = applicationConf.getString("report.output_path")
 }
