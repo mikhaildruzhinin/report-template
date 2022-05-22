@@ -1,6 +1,6 @@
 package report
 
-import dataframes.{KktCategories, KktInfo, Products, Sales}
+import dataframes.{KktActivity, KktCategories, KktInfo, Products, Sales}
 import org.apache.spark.sql.SparkSession
 
 class Report(spark: SparkSession, builder: ReportBuilder) {
@@ -9,33 +9,33 @@ class Report(spark: SparkSession, builder: ReportBuilder) {
   private val dateFrom: String = builder.dateFrom
   private val dateTo: String = builder.dateTo
   private val categories: String = builder.categories
-  private val groupByReceiptDate: Boolean = builder.groupByReceiptDate
-  private val groupByRegion: Boolean = builder.groupByRegion
-
-  private def getColumnsToGroupBy: Array[String] = {
-    val aggregateByColumns = Map(
-      "receipt_date" -> groupByReceiptDate,
-      "region" -> groupByRegion,
-      "brand" -> true
-    )
-    aggregateByColumns.filter(_._2).keySet.toArray
-  }
+  private val aggregateByColumns = Map(
+    "receipt_date" -> builder.groupByReceiptDate,
+    "region" -> builder.groupByRegion,
+    "channel" -> builder.groupByChannel,
+    "brand" -> true
+  )
 
   def generate(): Unit = {
     val sales = new Sales(spark, databaseUrl)
     val products = new Products(spark, pathToProductsFile)
     val kktCategories = new KktCategories(spark, databaseUrl)
     val kktInfo = new KktInfo(spark, databaseUrl)
+    val kktActivity = new KktActivity(spark, databaseUrl)
 
     val salesFilteredByDates = sales.filterByDates(dateFrom, dateTo)
     val salesFilteredByCategories = salesFilteredByDates.filterByCategories(categories, kktCategories)
 
-    val salesByBrands = salesFilteredByCategories.joinSalesAndBrands(products)
-    val salesByRegion = salesByBrands.joinSalesAndRegions(groupByRegion, kktInfo)
+    val kktActivityFilteredByDates = kktActivity.filterByDates(dateFrom, dateTo)
+    val activeKktInfo = kktInfo.filterByActivity(kktActivityFilteredByDates)
+    val activeKktInfoWithChannels = activeKktInfo.calculateChannels
 
-    val columnsToGroupBy = getColumnsToGroupBy
+    val salesWithBrands = salesFilteredByCategories.joinSalesAndBrands(products)
+    val salesWithInfo = salesWithBrands.joinSalesAndInfo(aggregateByColumns, activeKktInfoWithChannels)
 
-    val totalSum = salesByRegion.calculateTotalSum(columnsToGroupBy)
+    val columnsToGroupBy = aggregateByColumns.filter(_._2).keySet.toArray
+
+    val totalSum = salesWithInfo.calculateTotalSum(columnsToGroupBy)
     val totalSumPct = totalSum.calculateTotalSumPct(columnsToGroupBy)
     totalSumPct.df.show()
   }

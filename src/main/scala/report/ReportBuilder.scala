@@ -11,4 +11,5 @@ class ReportBuilder(commandLineConf: CommandLineConf, applicationConf: Config) {
   val categories: String = commandLineConf.categories()
   val groupByReceiptDate: Boolean = commandLineConf.receiptDate()
   val groupByRegion: Boolean = commandLineConf.region()
+  val groupByChannel: Boolean = commandLineConf.channel()
 }

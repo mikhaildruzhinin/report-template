@@ -37,8 +37,11 @@ class Sales(val df: DataFrame) extends BaseDataFrame {
     new Sales(df)
   }
 
-  def joinSalesAndRegions(groupByRegion: Boolean, kktInfo: KktInfo): Sales = {
-    val df = if (groupByRegion) {
+  def joinSalesAndInfo(aggregateByColumns: Map[String, Boolean], kktInfo: KktInfo): Sales = {
+    val df = if (
+      aggregateByColumns.getOrElse("region", false)
+        || aggregateByColumns.getOrElse("channel", false)
+    ) {
       val joinCondition = this.df.col("kkt_number") === kktInfo.df.col("number")
       this.df.join(
         kktInfo.df,
