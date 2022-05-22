@@ -1,7 +1,7 @@
 # report-template
 Генератор отчётов принимает на вход файл с разметкой и, используя данные о кассах и продажах в базе данных, формирует отчёт в формате csv.
 В качестве СУБД используется [SQLite](https://www.sqlite.org/index.html).
-Путь к сформированному отчёту задаётся в конфигурационном файле, по умолчанию `src/main/resources/out/reports/<dd-MM-yyyy_HH-mm-ss>/report` 
+Путь к сформированному отчёту задаётся в [конфигурационном файле](#configuration), по умолчанию `src/main/resources/out/reports/<dd-MM-yyyy_HH-mm-ss>/report` 
 
 ## Установка
 Необходимо клонировать репозиторий проекта:
@@ -9,11 +9,11 @@
 git clone git@github.com:mikhaildruzhinin/report-template.git
 ```
 Чтобы развернуть базу данных, запустите Python скрипт:
-```python
+```
 python3 scripts/setup_db.py
 ```
 
-## Конфигурирование
+## <a name="configuration"></a>Конфигурирование
 Конфигурационный файл расположен по адресу `src/main/resources/application.conf`.
 Файл содержит следующие параметры:
 * `spark.appname` - название приложения
@@ -43,7 +43,7 @@ sbt "run <args>"
 * `-h`, `--help` вывод справки и выход
 
 ## Примеры отчётов
-В папке `src/main/resources/examples` расположены три примера готовых отчётов, составленных в соотвтетствии с таблицей:
+В папке [`src/main/resources/examples`](https://github.com/mikhaildruzhinin/report-template/tree/master/src/main/resources/examples) расположены три примера готовых отчётов, составленных в соотвтетствии с таблицей:
 
 | dateFrom   | dateTo     | categories | receiptDate | region | channel  |
 |------------|------------|---|-------------|---|---|
