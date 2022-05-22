@@ -2,6 +2,7 @@ package dataframes
 
 import org.apache.spark.sql.functions.{col, lit}
 import org.apache.spark.sql.{DataFrame, SparkSession}
+import util.DataFrameLoader
 
 class KktActivity(val df: DataFrame) extends BaseDataFrame {
   def this(spark: SparkSession, databaseUrl: String) = this(KktActivity.getDF(spark, databaseUrl))
@@ -21,10 +22,11 @@ class KktActivity(val df: DataFrame) extends BaseDataFrame {
 
 object KktActivity {
   def getDF(spark: SparkSession, databaseUrl: String): DataFrame = {
-    spark.read
-      .format("jdbc")
-      .option("url", databaseUrl)
-      .option("dbtable", "kkt_activity")
-      .load()
+    val options = Map(
+      "url" -> databaseUrl,
+      "dbtable" -> "kkt_activity"
+    )
+    val loader = new DataFrameLoader
+    loader.load(spark, "jdbc", options)
   }
 }

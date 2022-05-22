@@ -1,7 +1,7 @@
 package dataframes
 
-import org.apache.spark.sql.types.{StringType, StructField, StructType}
 import org.apache.spark.sql.{DataFrame, SparkSession}
+import util.DataFrameLoader
 
 class Products(val df: DataFrame) extends BaseDataFrame {
   def this(spark: SparkSession, pathToProductsFile: String) = this(
@@ -11,18 +11,14 @@ class Products(val df: DataFrame) extends BaseDataFrame {
 
 object Products {
   def getDF(spark: SparkSession, pathToProductsFile: String): DataFrame  = {
-    val productSchema = StructType(
-      Array(
-        StructField("brand", StringType),
-        StructField("product_name_hash", StringType)
-      )
+    val options = Map(
+      "inferSchema" -> "true",
+      "header" -> "true",
+      "sep" -> ",",
+      "path" -> pathToProductsFile
     )
-
-    spark.read
-      .schema(productSchema)
-      .option("header", "true")
-      .option("sep", ",")
-      .csv(pathToProductsFile)
-      .withColumnRenamed("product_name_hash", "name_hash")
+    val loader = new DataFrameLoader
+    val df = loader.load(spark, "csv", options)
+    df.withColumnRenamed("product_name_hash", "name_hash")
   }
 }

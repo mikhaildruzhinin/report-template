@@ -3,6 +3,7 @@ package dataframes
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions.{col, desc, row_number}
 import org.apache.spark.sql.{DataFrame, SparkSession}
+import util.DataFrameLoader
 
 class KktCategories(val df: DataFrame) extends BaseDataFrame {
   def this(spark: SparkSession, databaseUrl: String) = this(
@@ -26,10 +27,11 @@ class KktCategories(val df: DataFrame) extends BaseDataFrame {
 
 object KktCategories {
   def getDF(spark: SparkSession, databaseUrl: String): DataFrame = {
-    spark.read
-      .format("jdbc")
-      .option("url", databaseUrl)
-      .option("dbtable", "kkt_categories")
-      .load()
+    val options = Map(
+      "url" -> databaseUrl,
+      "dbtable" -> "kkt_categories"
+    )
+    val loader = new DataFrameLoader
+    loader.load(spark, "jdbc", options)
   }
 }

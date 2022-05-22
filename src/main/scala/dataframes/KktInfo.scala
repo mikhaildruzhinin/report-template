@@ -3,6 +3,7 @@ package dataframes
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions.{col, sum, when}
 import org.apache.spark.sql.{DataFrame, SparkSession}
+import util.DataFrameLoader
 
 class KktInfo(val df: DataFrame) extends BaseDataFrame {
   def this(spark: SparkSession, databaseUrl: String) = this(KktInfo.getDF(spark, databaseUrl))
@@ -35,11 +36,12 @@ class KktInfo(val df: DataFrame) extends BaseDataFrame {
 
 object KktInfo {
   def getDF(spark: SparkSession, databaseUrl: String): DataFrame = {
-    spark.read
-      .format("jdbc")
-      .option("url", databaseUrl)
-      .option("dbtable", "kkt_info")
-      .load()
-      .withColumnRenamed("kkt_number", "number")
+    val options = Map(
+      "url" -> databaseUrl,
+      "dbtable" -> "kkt_info"
+    )
+    val loader = new DataFrameLoader
+    val df = loader.load(spark, "jdbc", options)
+    df.withColumnRenamed("kkt_number", "number")
   }
 }

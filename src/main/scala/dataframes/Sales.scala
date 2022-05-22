@@ -3,6 +3,7 @@ package dataframes
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions.{col, round, sum}
 import org.apache.spark.sql.{DataFrame, SparkSession}
+import util.DataFrameLoader
 
 class Sales(val df: DataFrame) extends BaseDataFrame {
   def this(spark: SparkSession, databaseUrl: String) = this(Sales.getDF(spark, databaseUrl))
@@ -88,10 +89,11 @@ class Sales(val df: DataFrame) extends BaseDataFrame {
 
 object Sales {
   def getDF(spark: SparkSession, databaseUrl: String): DataFrame = {
-    spark.read
-      .format("jdbc")
-      .option("url", databaseUrl)
-      .option("dbtable", "sales")
-      .load()
+    val options = Map(
+      "url" -> databaseUrl,
+      "dbtable" -> "sales"
+    )
+    val loader = new DataFrameLoader
+    loader.load(spark, "jdbc", options)
   }
 }
