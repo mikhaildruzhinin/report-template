@@ -46,3 +46,4 @@ bin/
 *.class
 
 out/
+*.db
