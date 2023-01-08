@@ -14,5 +14,6 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-sql" % sparkVersion,
   "org.rogach" %% "scallop" % "4.1.0",
   "org.xerial" % "sqlite-jdbc" % "3.36.0.3",
-  "com.typesafe" % "config" % "1.4.2"
+  "com.typesafe" % "config" % "1.4.2",
+  "com.github.pureconfig" %% "pureconfig" % "0.17.2"
 )

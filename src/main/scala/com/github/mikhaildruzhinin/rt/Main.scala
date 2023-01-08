@@ -1,24 +1,24 @@
 package com.github.mikhaildruzhinin.rt
 
 import com.github.mikhaildruzhinin.rt.report.Report
+import com.github.mikhaildruzhinin.rt.util.config.AppConfig
 import com.github.mikhaildruzhinin.rt.util.{CommandLineConf, ReportBuilder}
-import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.spark.sql.SparkSession
+import pureconfig.ConfigSource.default.loadOrThrow
+import pureconfig.generic.auto._
 
 object Main {
   def main(args: Array[String]): Unit = {
-    val commandLineConf = new CommandLineConf(args)
-    val applicationConf: Config = ConfigFactory.load("application.conf")
+    lazy val appConfig: AppConfig = loadOrThrow[AppConfig]
 
-    val appName = applicationConf.getString("spark.appname")
-    val sparkMaster = applicationConf.getString("spark.master")
+    val commandLineConf = new CommandLineConf(args)
 
     val spark = SparkSession.builder()
-      .appName(appName)
-      .config("spark.master", sparkMaster)
+      .appName(appConfig.spark.appName)
+      .config("spark.master", appConfig.spark.master)
       .getOrCreate()
 
-    val reportBuilder = new ReportBuilder(commandLineConf, applicationConf)
+    val reportBuilder = new ReportBuilder(commandLineConf, appConfig)
     val report = new Report(spark, reportBuilder)
     report.generate()
   }
