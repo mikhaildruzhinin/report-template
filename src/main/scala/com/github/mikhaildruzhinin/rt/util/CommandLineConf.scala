@@ -1,4 +1,4 @@
-package util
+package com.github.mikhaildruzhinin.rt.util
 
 import org.rogach.scallop.{ScallopConf, ScallopOption}
 

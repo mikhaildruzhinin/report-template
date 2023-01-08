@@ -1,8 +1,8 @@
-package dataframes
+package com.github.mikhaildruzhinin.rt.dataframes
 
+import com.github.mikhaildruzhinin.rt.util.DataFrameLoader
 import org.apache.spark.sql.functions.{col, lit}
 import org.apache.spark.sql.{DataFrame, SparkSession}
-import util.DataFrameLoader
 
 class KktActivity(val df: DataFrame) extends BaseDataFrame {
   def this(spark: SparkSession, databaseUrl: String) = this(KktActivity.getDF(spark, databaseUrl))

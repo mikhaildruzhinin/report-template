@@ -1,8 +1,9 @@
-package report
+package com.github.mikhaildruzhinin.rt
 
+import com.github.mikhaildruzhinin.rt.report.Report
+import com.github.mikhaildruzhinin.rt.util.{CommandLineConf, ReportBuilder}
 import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.spark.sql.SparkSession
-import util.{CommandLineConf, ReportBuilder}
 
 object Main {
   def main(args: Array[String]): Unit = {

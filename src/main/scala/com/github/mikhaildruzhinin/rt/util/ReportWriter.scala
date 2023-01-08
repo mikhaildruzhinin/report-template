@@ -1,6 +1,6 @@
-package util
+package com.github.mikhaildruzhinin.rt.util
 
-import dataframes.BaseDataFrame
+import com.github.mikhaildruzhinin.rt.dataframes.BaseDataFrame
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

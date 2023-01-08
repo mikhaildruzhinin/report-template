@@ -1,4 +1,4 @@
-package dataframes
+package com.github.mikhaildruzhinin.rt.dataframes
 
 import org.apache.spark.sql.DataFrame
 

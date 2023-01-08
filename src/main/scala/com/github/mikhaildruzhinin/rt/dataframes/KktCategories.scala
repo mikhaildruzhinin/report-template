@@ -1,9 +1,9 @@
-package dataframes
+package com.github.mikhaildruzhinin.rt.dataframes
 
+import com.github.mikhaildruzhinin.rt.util.DataFrameLoader
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions.{col, desc, row_number}
 import org.apache.spark.sql.{DataFrame, SparkSession}
-import util.DataFrameLoader
 
 class KktCategories(val df: DataFrame) extends BaseDataFrame {
   def this(spark: SparkSession, databaseUrl: String) = this(

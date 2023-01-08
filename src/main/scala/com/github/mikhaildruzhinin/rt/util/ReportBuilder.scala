@@ -1,4 +1,4 @@
-package util
+package com.github.mikhaildruzhinin.rt.util
 
 import com.typesafe.config.Config
 

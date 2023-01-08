@@ -1,8 +1,8 @@
-package report
+package com.github.mikhaildruzhinin.rt.report
 
-import dataframes.{KktActivity, KktCategories, KktInfo, Products, Sales}
+import com.github.mikhaildruzhinin.rt.dataframes.{KktActivity, KktCategories, KktInfo, Products, Sales}
+import com.github.mikhaildruzhinin.rt.util.{ReportBuilder, ReportWriter}
 import org.apache.spark.sql.SparkSession
-import util.{ReportBuilder, ReportWriter}
 
 class Report(spark: SparkSession, builder: ReportBuilder) {
   private val pathToProductsFile: String = builder.pathToProductsFile
